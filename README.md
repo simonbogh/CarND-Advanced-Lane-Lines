@@ -45,7 +45,7 @@ A total of 17 out of the 20 chessboard calibration images were succesful to use 
 
 #### 1. Example of a distortion-corrected image
 
-In `Section 2` of `P2-advanced-lane-lines.ipynb` image distortation is implemented. The image below shows an example where distortation correction was applied to one of the highway test images. The `cv2.calibrateCamera()` function was used with the `objpoints` and `imgpoints` acquired in the camera calibration step. `cv2.calibrateCamera()` returns
+In `Section 2` of `P2-advanced-lane-lines.ipynb` image distortation correction is implemented. The image below shows an example where distortation correction was applied to one of the highway test images. The `cv2.calibrateCamera()` function was used with the `objpoints` and `imgpoints` acquired in the camera calibration step. `cv2.calibrateCamera()` returns
 
 * retval: root mean square (RMS) re-projection error. An RMS error of 1.0 means that, on average, each of these projected points is 1.0 px away from its actual position
 * cameraMatrix: Output 3x3 floating-point camera matrix
@@ -58,7 +58,7 @@ These values are then used with the `cv2.undistort()` function to undistort an i
 
 #### 2. Creating a thresholded binary image using Sobel and HLS colorspace
 
-In `Section 3` of `P2-advanced-lane-lines.ipynb` a binary image is created. I used a combination of color and gradient thresholds to generate a binary image.  Here's an example of my output for this step. The implementation extracts the HLS colorspace, where especially the S channel seems to highlight the lane lines quite well. A Sobel filter was applied followed by a custom thresholding to select relevant pixels. This was followed by a thresholding of the S channel of HLS. Finally, the two binary output were combined to produce the final output seen below.
+In `Section 3` of `P2-advanced-lane-lines.ipynb` a binary image is created. I used a combination of color and gradient thresholds to generate a binary image. The implementation extracts the HLS colorspace, where especially the S channel seems to highlight the lane lines quite well. A Sobel filter was applied followed by a custom thresholding to select relevant pixels. This was followed by a thresholding of the S channel of HLS. Finally, the two binary output were combined to produce the final output seen below.
 
 ![alt text](docs/binary_threshold.png)
 
@@ -68,13 +68,13 @@ In `Section 4` of `P2-advanced-lane-lines.ipynb` the code for performing perspec
 
 
 ```python
-src = np.float32([
+src_coord = np.float32([
     [837, 548],  # top right
     [1018, 667], # bottom right
     [281, 667],  # bottom left
     [454, 548]   # top left
 ])
-dst = np.float32([
+dst_coord = np.float32([
     [1018, 548], # top right
     [1018, 667], # bottom right
     [281, 667],  # bottom left
@@ -104,9 +104,9 @@ An example of a perspective corrected binary image is shown below. On the left y
 
 In `Section 5` of `P2-advanced-lane-lines.ipynb` the lane line detection and polynomial fitting is implemented.
 
-First I defined a function for detecting the lane pixels `find_lane_pixels()`. It takes in a undistorted binary image from the previous step, and it outputs detected pixels that are relevant to the right and left lane line. The lane lines are detected by finding historgram peaks at the lower part of the image and using a sliding window to move across the binary image. The two most prominent peaks in the histogram will be good indicators of the x-position of the base of the lane lines. I use that as a starting point for where to search for the lane lines. From that point, I use a sliding window, placed around the line centers, to find and follow the lines up to the top of the image frame as seen in the image below.
+First I defined a function for detecting the lane pixels `find_lane_pixels()`. It takes in a undistorted binary image from the previous step, and it outputs detected pixels that are relevant to the right and left lane line. The lane lines are detected by finding histogram peaks at the lower part of the image and using a sliding window to move across the binary image. The two most prominent peaks in the histogram will be good indicators of the x-position of the base of the lane lines. I use that as a starting point for where to search for the lane lines. From that point, I use a sliding window, placed around the line centers, to find and follow the lines up to the top of the image frame as seen in the image below.
 
-Then I implemented another function called `fit_polynomial()`, which takes also a binary image and then later calls `find_lane_pixels()` described above. It receives the relevant lane lines pixels from `find_lane_pixels()`. These x,y for the left and right lane line respectively, are then used for fitting a second order polynomial to each lane line. `fit_polynomial()` an image for visualization and the fitted polynomial parameters and pixels for each lane line.
+Then I implemented another function called `fit_polynomial()`, which also takes a binary image and then later calls `find_lane_pixels()` described above. It receives the relevant lane lines pixels from `find_lane_pixels()`. These x,y pixel values for the left and right lane line respectively, are then used for fitting a second order polynomial to each lane line. `fit_polynomial()` an image for visualization and the fitted polynomial parameters and pixels for each lane line.
 
 ![alt text](docs/lane_line_detection.png)
 
